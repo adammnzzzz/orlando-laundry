@@ -16,7 +16,7 @@ class ReportController extends Controller
         }
 
         $reports = $query->latest()->get();
-        $totalPendapatan = $reports->sum('total');
+        $totalPendapatan = $reports->sum('grand_total');
 
         return view('reports.index', compact('reports', 'totalPendapatan'));
     }

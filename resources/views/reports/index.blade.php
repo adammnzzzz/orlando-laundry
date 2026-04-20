@@ -76,7 +76,7 @@
 
                 <button type="submit"
                     class="bg-indigo-600 hover:bg-indigo-700 
-                           text-black font-medium text-sm
+                           text-white font-medium text-sm
                            px-5 py-2 rounded-lg
                            shadow-sm hover:shadow-md
                            transition duration-200">
@@ -103,27 +103,39 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="bg-gradient-to-r from-indigo-100 to-indigo-200 text-gray-700">
+                                <tr class="bg-gradient-to-r from-indigo-100 to-indigo-200 text-gray-700 text-sm">
                                     <th class="py-3 px-4 border-b">ID Order</th>
-                                    <th class="py-3 px-4 border-b">Tanggal Order</th>
-                                    <th class="py-3 px-4 border-b">Tgl Diambil</th>
-                                    <th class="py-3 px-4 border-b">Nama Customer</th>
+                                    <th class="py-3 px-4 border-b">Tgl Order</th>
+                                    <th class="py-3 px-4 border-b">Status</th>
+                                    <th class="py-3 px-4 border-b">Nama Pelanggan</th>
                                     <th class="py-3 px-4 border-b">Total Tagihan</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($reports as $r)
-                                    <tr class="odd:bg-white even:bg-gray-50 hover:bg-indigo-50 transition">
+                                    <tr class="odd:bg-white even:bg-gray-50 hover:bg-indigo-50 transition text-sm">
                                         <td class="py-3 px-4 border-b font-mono font-bold text-indigo-600">
                                             <a href="{{ route('transactions.show', $r->id) }}" class="hover:underline">
                                                 {{ $r->order_code }}
                                             </a>
                                         </td>
                                         <td class="py-3 px-4 border-b">{{ $r->order_date }}</td>
-                                        <td class="py-3 px-4 border-b">{{ $r->order_end_date ? \Carbon\Carbon::parse($r->order_end_date)->format('Y-m-d H:i') : '-' }}</td>
-                                        <td class="py-3 px-4 border-b">{{ $r->customer->customer_name }}</td>
+                                        <td class="py-3 px-4 border-b">
+                                            @if($r->guest_name)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                                    Non-Member (Guest)
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 border border-indigo-200">
+                                                    Member
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="py-3 px-4 border-b font-medium">
+                                            {{ $r->guest_name ?: ($r->customer ? $r->customer->customer_name : 'No Name') }}
+                                        </td>
                                         <td class="py-3 px-4 border-b font-bold text-emerald-600">
-                                            Rp {{ number_format($r->total, 0, ',', '.') }}
+                                            Rp {{ number_format($r->grand_total, 0, ',', '.') }}
                                         </td>
                                     </tr>
                                 @empty

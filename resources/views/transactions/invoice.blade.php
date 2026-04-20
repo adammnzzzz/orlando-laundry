@@ -29,8 +29,8 @@
         <div class="flex justify-between mb-8 border-b pb-8">
             <div>
                 <h3 class="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Informasi Pelanggan</h3>
-                <p class="font-bold text-lg">{{ $transaction->customer->customer_name }}</p>
-                <p class="text-gray-600">{{ $transaction->customer->phone }}</p>
+                <p class="font-bold text-lg">{{ $transaction->guest_name ?: $transaction->customer->customer_name }}</p>
+                <p class="text-gray-600">{{ $transaction->guest_phone ?: $transaction->customer->phone }}</p>
                 <p class="text-gray-600 text-sm mt-1">{{ $transaction->customer->address }}</p>
             </div>
             <div class="text-right">
@@ -68,18 +68,33 @@
         </table>
 
         <div class="flex justify-end mb-8">
-            <div class="w-1/2">
-                <div class="flex justify-between py-1">
-                    <span class="text-gray-600">Total Tagihan</span>
-                    <span class="font-bold text-lg">Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
+            <div class="w-2/3">
+                <div class="flex justify-between py-1 text-sm">
+                    <span class="text-gray-600">Subtotal</span>
+                    <span>Rp {{ number_format($transaction->total, 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between py-1">
+                <div class="flex justify-between py-1 text-sm text-indigo-600">
+                    <span class="">PPN (11%)</span>
+                    <span>Rp {{ number_format($transaction->tax, 0, ',', '.') }}</span>
+                </div>
+                @if($transaction->discount > 0)
+                <div class="flex justify-between py-1 text-sm text-red-600 font-bold">
+                    <span class="">Diskon</span>
+                    <span>- Rp {{ number_format($transaction->discount, 0, ',', '.') }}</span>
+                </div>
+                @endif
+                <div class="flex justify-between py-2 border-t border-gray-200 mt-2">
+                    <span class="text-gray-800 font-bold uppercase">Total Akhir (Grand Total)</span>
+                    <span class="font-black text-xl text-indigo-700">Rp {{ number_format($transaction->grand_total, 0, ',', '.') }}</span>
+                </div>
+                
+                <div class="flex justify-between py-1 text-sm mt-2">
                     <span class="text-gray-600">Uang Bayar</span>
                     <span>Rp {{ number_format($transaction->order_pay, 0, ',', '.') }}</span>
                 </div>
-                <div class="flex justify-between py-1 border-t border-gray-200 mt-1 pt-1">
+                <div class="flex justify-between py-1 border-t border-dotted border-gray-300 mt-1 pt-1">
                     <span class="text-gray-600 font-bold">Kembalian</span>
-                    <span class="font-bold text-indigo-600">Rp {{ number_format($transaction->order_change, 0, ',', '.') }}</span>
+                    <span class="font-bold text-green-600">Rp {{ number_format($transaction->order_change, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>
