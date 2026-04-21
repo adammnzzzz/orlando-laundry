@@ -3,6 +3,22 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Kasir Laundry (Transaksi Baru)') }}
         </h2>
+        <!-- Tom Select CSS & JS -->
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+        <style>
+            .ts-control {
+                border-color: #d1d5db;
+                border-radius: 0.375rem;
+                padding: 0.5rem 0.75rem;
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+                font-size: 1rem;
+            }
+            .ts-control.focus {
+                border-color: #6366f1;
+                box-shadow: 0 0 0 1px #6366f1;
+            }
+        </style>
     </x-slot>
 
     <div class="py-12">
@@ -25,14 +41,14 @@
                                 <h3 class="text-lg font-bold text-gray-700">Data Pelanggan</h3>
                                 <div class="flex gap-4">
                                     <div class="flex items-center">
-                                        <input type="checkbox" id="is_guest" name="is_guest" class="rounded border-gray-300 text-gray-600 shadow-sm focus:ring-gray-500 mr-2">
+                                        <input type="checkbox" id="is_guest" name="is_guest" value="1" class="rounded border-gray-300 text-gray-600 shadow-sm focus:ring-gray-500 mr-2" {{ old('is_guest') ? 'checked' : '' }}>
                                         <div class="flex flex-col">
                                             <label for="is_guest" class="text-sm font-semibold text-gray-600">Transaksi Guest (Non-Member)</label>
                                             <span class="text-[10px] text-red-500 font-bold italic leading-none">*Tanpa Diskon</span>
                                         </div>
                                     </div>
                                     <div class="flex items-center" id="new-member-toggle">
-                                        <input type="checkbox" id="is_new_customer" name="is_new_customer" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 mr-2">
+                                        <input type="checkbox" id="is_new_customer" name="is_new_customer" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500 mr-2" {{ old('is_new_customer') ? 'checked' : '' }}>
                                         <label for="is_new_customer" class="text-sm font-semibold text-gray-700">Pelanggan Baru dan Ingin jadi Member</label>
                                     </div>
                                 </div>
@@ -55,16 +71,16 @@
                             <div id="new-customer-section" class="hidden space-y-4">
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-1">Nama Pelanggan</label>
-                                    <input type="text" name="customer_name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Masukkan nama lengkap">
+                                    <input type="text" name="customer_name" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Masukkan nama lengkap" value="{{ old('customer_name') }}">
                                 </div>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-bold text-gray-700 mb-1">Nomor Telepon</label>
-                                        <input type="text" name="phone" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="08xxxx">
+                                        <input type="text" name="phone" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="08xxxx / Angka Saja" value="{{ old('phone') }}">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-bold text-gray-700 mb-1">Alamat</label>
-                                        <input type="text" name="address" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Alamat lengkap">
+                                        <input type="text" name="address" class="w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Alamat lengkap" value="{{ old('address') }}">
                                     </div>
                                 </div>
                             </div>
@@ -209,6 +225,16 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Tom Select for searchable customer dropdown
+            new TomSelect("#id_customer", {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "-- Cari atau Pilih Pelanggan --"
+            });
+
             let serviceIndex = 1;
             const container = document.getElementById("services-container");
             const btnAdd = document.getElementById("btn-add-service");
@@ -363,7 +389,8 @@
             document.getElementById("order_pay").addEventListener("input", calculateChange);
             document.getElementById("voucher_code").addEventListener("input", updateTotals);
             
-            // Initial calculation
+            // Initial calculation and toggle state
+            handleToggles();
             updateTotals();
         });
     </script>

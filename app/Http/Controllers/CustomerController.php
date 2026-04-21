@@ -7,9 +7,18 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::latest()->get();
+        $search = $request->query('search');
+        $perPage = $request->query('per_page', 25);
+
+        $customers = Customer::latest()
+            ->when($search, function ($query, $search) {
+                return $query->where('customer_name', 'like', "%{$search}%");
+            })
+            ->paginate($perPage)
+            ->withQueryString();
+
         return view('admin.customers.index', compact('customers'));
     }
 
@@ -22,7 +31,7 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|numeric',
             'address' => 'required|string',
         ]);
         Customer::create($validated);
@@ -38,7 +47,7 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|numeric',
             'address' => 'required|string',
         ]);
         $customer->update($validated);

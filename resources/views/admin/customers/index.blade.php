@@ -23,11 +23,31 @@
                         </a>
                     </div>
 
+                    <form method="GET" action="{{ route('customers.index') }}" class="mb-4 flex flex-col md:flex-row gap-4 items-center">
+                        <div>
+                            <select name="per_page" onchange="this.form.submit()" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 per halaman</option>
+                                <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 per halaman</option>
+                                <option value="75" {{ request('per_page') == 75 ? 'selected' : '' }}>75 per halaman</option>
+                                <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 per halaman</option>
+                            </select>
+                        </div>
+                        <div class="flex-grow w-full md:w-auto">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama customer..." class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm flex-grow">
+                        </div>
+                        <div class="flex space-x-2 w-full md:w-auto justify-end">
+                            <button type="submit" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition">Cari</button>
+                            @if(request('search') || request('per_page'))
+                                <a href="{{ route('customers.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition flex items-center justify-center">Reset</a>
+                            @endif
+                        </div>
+                    </form>
+
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
                                 <tr class="bg-gray-100 text-gray-700">
-                                    <th class="py-3 px-4 border-b">ID</th>
+                                    <th class="py-3 px-4 border-b text-center w-16">No.</th>
                                     <th class="py-3 px-4 border-b">Nama Customer</th>
                                     <th class="py-3 px-4 border-b">Phone</th>
                                     <th class="py-3 px-4 border-b">Alamat</th>
@@ -37,7 +57,7 @@
                             <tbody>
                                 @forelse($customers as $c)
                                     <tr class="hover:bg-gray-50 transition">
-                                        <td class="py-3 px-4 border-b">{{ $c->id }}</td>
+                                        <td class="py-3 px-4 border-b text-center">{{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}</td>
                                         <td class="py-3 px-4 border-b font-semibold">{{ $c->customer_name }}</td>
                                         <td class="py-3 px-4 border-b">{{ $c->phone }}</td>
                                         <td class="py-3 px-4 border-b">{{ Str::limit($c->address, 30) }}</td>
@@ -57,6 +77,10 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="mt-6">
+                        {{ $customers->links() }}
                     </div>
                 </div>
             </div>
